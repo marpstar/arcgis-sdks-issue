@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create a Map</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
+  <style>
+    html, body, #mapDiv{
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  </style>
+  
+  <script src="http://js.arcgis.com/3.14/"></script>
+  <script>
+    var map, layer;
+    require(["esri/map", 
+    		 "esri/layers/ArcGISDynamicMapServiceLayer",
+    		 "esri/tasks/QueryTask",
+    		 "esri/tasks/query",
+    		 "dojo/domReady!"], 
+    function(
+    		Map,
+    		ArcGISDynamicMapServiceLayer,
+    		QueryTask,
+    		Query
+    ) {
+      map = new Map("mapDiv", {
+        center: [-56.049, 38.485],
+        zoom: 3,
+        basemap: "topo"
+      });
+      map.on("load",executeQueryTask);
+
+      function executeQueryTask(){
+      	console.log("in here");
+
+      	
+        //Url for query
+        var url = "http://gis.co.collin.tx.us/arcgis/rest/services/county/QueryLayers/MapServer/0";
+        
+        console.log("preparing..")
+        //////////---QueryTask--/////////
+        var queryTask = QueryTask(url);
+        var query = new Query();
+        query.outFields = ["*"];
+        query.returnGeometry = false;
+        query.where = "1=1";
+        console.log("executing..");
+        queryTask.execute(query, handleQueryResult, errorHandler);
+        //////////////////////////////////
+        
+      }
+      function handleQueryResult(result) {
+      	// var queryResults = result[0].features;
+      	console.log("queryResults: ", result);
+      	var cityNameArray = [];
+        //var test = result.features[0].attributes;
+        var resultArraySize = result.features.length;
+
+        //console.log(test.CITY_NAME);
+	        for(var i=0; i < resultArraySize; i++){
+	        	cityNameArray.push(result.features[i].attributes.CITY_NAME);
+	        	
+	        }
+	        console.log("array: ", cityNameArray);
+        }
+    
+       function errorHandler(err) {
+        console.log('Oops, error: ', err);
+      }
+    });
+  </script>
+
+</head>
+<body class="claro">
+  <div id="mapDiv"></div>
+</body>
+</html>
