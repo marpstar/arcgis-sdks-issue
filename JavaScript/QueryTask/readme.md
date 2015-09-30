@@ -1,0 +1,1 @@
+<a href ="http://david-chambers.github.io/arcgis-sdks/JavaScript/QueryTask/">View Live Sample</a>
