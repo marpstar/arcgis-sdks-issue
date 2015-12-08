@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create a Map</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.15/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
+  <style>
+    html, body, #mapDiv{
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      
+    }
+    #container{
+      position: relative; 
+      height: 100%;
+
+    }
+    #elevQuery{
+      position: absolute;
+      z-index: 10;
+      top: 40px;
+      right:40px;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.7); /* Color white with alpha 0.9*/
+
+    }
+    .style-1 input[type="text"] {
+      padding: 10px;
+      border: solid 1px #dcdcdc;
+      transition: box-shadow 0.3s, border 0.3s;
+    }
+    .style-1 input[type="text"]:focus,
+    .style-1 input[type="text"].focus {
+      border: solid 1px #707070;
+      box-shadow: 0 0 5px 1px #969696;
+    }
+  </style>
+  
+  <script src="https://js.arcgis.com/3.15/"></script>
+  <script>
+    var map;
+    var x;
+    var y;
+
+    require(["esri/map", 
+             "esri/geometry/webMercatorUtils",
+             "dojo/domReady!"], 
+    function(
+      Map,
+      webMercatorUtils
+
+    ) {
+      map = new Map("mapDiv", {
+        center: [-56.049, 38.485],
+        zoom: 3,
+        basemap: "streets"
+      });
+
+      map.on("click", getCoordinates);
+
+      function getCoordinates(){
+        var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+      }
+
+
+   
+    });
+
+    function getXY(){
+      console.log("test");
+      x = document.getElementById("x");
+      y = document.getElementById("y");
+
+      console.log(x.value);
+      console.log(y.value);
+    }
+
+  </script>
+
+</head>
+<body class="claro">
+<div id="container">
+  <div id="mapDiv"></div>
+  <div id="elevQuery">
+    X: <input type="text" name="x" id="x" value="Long"><br><br>
+    Y: <input type="text" name="y" id="y" value="Lat"><br><br>
+       <input type="submit" text-align: "center" value="Get Elevation" onclick="getXY()">
+
+  </div>
+</div>
+
+</body>
+</body>
+</html>
