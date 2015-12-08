@@ -25,7 +25,7 @@
       top: 40px;
       right:40px;
       text-align: center;
-      background-color: rgba(255, 255, 255, 0.7); /* Color white with alpha 0.9*/
+      background-color: rgba(255, 255, 255, 0.5); /* Color white with alpha 0.9*/
 
     }
     .style-1 input[type="text"] {
@@ -48,10 +48,12 @@
 
     require(["esri/map", 
              "esri/geometry/webMercatorUtils",
+             "dojo/dom",
              "dojo/domReady!"], 
     function(
       Map,
-      webMercatorUtils
+      webMercatorUtils,
+      dom
 
     ) {
       map = new Map("mapDiv", {
@@ -62,8 +64,14 @@
 
       map.on("click", getCoordinates);
 
-      function getCoordinates(){
+      function getCoordinates(evt){
         var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+        console.log("x: " + mp.x.toFixed(3));
+        console.log("y: " + mp.y.toFixed(3));
+
+        //Put XY into text box
+        document.getElementsByName('x')[0].value = mp.x.toFixed(3);
+        document.getElementsByName('y')[0].value = mp.y.toFixed(3);
       }
 
 
@@ -89,6 +97,7 @@
     X: <input type="text" name="x" id="x" value="Long"><br><br>
     Y: <input type="text" name="y" id="y" value="Lat"><br><br>
        <input type="submit" text-align: "center" value="Get Elevation" onclick="getXY()">
+       <p>Manually enter Lat/Long points into the text box above. <br>Or click the map and get the clicked point map location.</p>
 
   </div>
 </div>
