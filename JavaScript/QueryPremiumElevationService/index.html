@@ -97,22 +97,7 @@
 
       function queryZ(pointData){
         console.log("test");
-        var layersRequest = esriRequest({
-          url: layerURL,
-          content: { f: "json",
-                     geometry: "{\"x\":1446235.490173543,\"y\":542459.4874152396,\"spatialReference\":{\"wkid\":102100}}"
-
-
-           },
-          handleAs: "json",
-          callbackParamName: "callback"
-        });
-        layersRequest.then(
-        function(response) {
-          console.log("Success: ", response.layers);
-        }, function(error) {
-            console.log("Error: ", error.message);
-        });
+        //TO-DO: Implement IdentityTask
       }
 
       document.getElementById("myBtn").addEventListener("click", getXY);
