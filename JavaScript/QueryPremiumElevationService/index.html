@@ -45,17 +45,32 @@
     var map;
     var x;
     var y;
+    var mp_meters;
+    var layerURL = "http://elevation.arcgis.com/arcgis/rest/services/WorldElevation/Terrain/ImageServer/identify";
+
+    //getXY = function(){};
 
     require(["esri/map", 
              "esri/geometry/webMercatorUtils",
+             "esri/urlUtils",
+             "esri/request",
              "dojo/dom",
              "dojo/domReady!"], 
     function(
       Map,
       webMercatorUtils,
+      urlUtils,
+      esriRequest,
       dom
 
     ) {
+
+      //Create a rule to go to Proxy when accessing elevation service
+      urlUtils.addProxyRule({
+        urlPrefix: "http://elevation.arcgis.com",
+        proxyUrl: "http://csc-dchambers7d/DotNet/proxy.ashx"
+      });
+
       map = new Map("mapDiv", {
         center: [-56.049, 38.485],
         zoom: 3,
@@ -65,27 +80,58 @@
       map.on("click", getCoordinates);
 
       function getCoordinates(evt){
-        var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-        console.log("x: " + mp.x.toFixed(3));
-        console.log("y: " + mp.y.toFixed(3));
+        //Get map point in meters
+        mp_meters = evt.mapPoint;
+
+        //Get map point in decimal degrees
+        var mp_geographic = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+        
+        //log
+        console.log("x: " + mp_meters.x.toFixed(13));
+        console.log("y: " + mp_meters.y.toFixed(13));
 
         //Put XY into text box
-        document.getElementsByName('x')[0].value = mp.x.toFixed(3);
-        document.getElementsByName('y')[0].value = mp.y.toFixed(3);
+        document.getElementsByName('x')[0].value = mp_geographic.x.toFixed(3);
+        document.getElementsByName('y')[0].value = mp_geographic.y.toFixed(3);
       }
 
+      function queryZ(pointData){
+        console.log("test");
+        var layersRequest = esriRequest({
+          url: layerURL,
+          content: { f: "json",
+                     geometry: "{\"x\":1446235.490173543,\"y\":542459.4874152396,\"spatialReference\":{\"wkid\":102100}}"
 
+
+           },
+          handleAs: "json",
+          callbackParamName: "callback"
+        });
+        layersRequest.then(
+        function(response) {
+          console.log("Success: ", response.layers);
+        }, function(error) {
+            console.log("Error: ", error.message);
+        });
+      }
+
+      document.getElementById("myBtn").addEventListener("click", getXY);
+      
+      function getXY(){
+        //console.log("test");
+        // x = document.getElementById("x");
+        // y = document.getElementById("y");
+        console.log("In GeyXY");
+        console.log("x: " + mp_meters.x.toFixed(13));
+        console.log("y: " + mp_meters.y.toFixed(13));
+
+        queryZ(mp_meters)
+      
+    }
    
     });
 
-    function getXY(){
-      console.log("test");
-      x = document.getElementById("x");
-      y = document.getElementById("y");
-
-      console.log(x.value);
-      console.log(y.value);
-    }
+    
 
   </script>
 
@@ -96,7 +142,7 @@
   <div id="elevQuery">
     X: <input type="text" name="x" id="x" value="Long"><br><br>
     Y: <input type="text" name="y" id="y" value="Lat"><br><br>
-       <input type="submit" text-align: "center" value="Get Elevation" onclick="getXY()">
+       <input type="submit" id="myBtn"text-align: "center" value="Get Elevation">
        <p>Manually enter Lat/Long points into the text box above. <br>Or click the map and get the clicked point map location.</p>
 
   </div>
