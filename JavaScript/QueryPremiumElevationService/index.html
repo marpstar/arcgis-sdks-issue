@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Create a Map</title>
+  <title>Identify Elevation</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <link rel="stylesheet" href="https://js.arcgis.com/3.15/dijit/themes/claro/claro.css">
@@ -46,24 +46,31 @@
     var x;
     var y;
     var mp_meters;
-    var layerURL = "http://elevation.arcgis.com/arcgis/rest/services/WorldElevation/Terrain/ImageServer/identify";
+    var layerURL = "http://elevation.arcgis.com/arcgis/rest/services/WorldElevation/Terrain/ImageServer";
 
+    
     //getXY = function(){};
 
     require(["esri/map", 
              "esri/geometry/webMercatorUtils",
              "esri/urlUtils",
-             "esri/request",
+             "esri/tasks/IdentifyTask",
+             "esri/tasks/IdentifyParameters",
+             "esri/tasks/IdentifyResult",
+             "dojo/_base/array",
              "dojo/dom",
              "dojo/domReady!"], 
     function(
       Map,
       webMercatorUtils,
       urlUtils,
-      esriRequest,
+      IdentityTask,
+      IdentifyParameters,
+      arrayUtils,
       dom
 
     ) {
+      var identifyTask, identifyParams;
 
       //Create a rule to go to Proxy when accessing elevation service
       urlUtils.addProxyRule({
@@ -98,7 +105,28 @@
       function queryZ(pointData){
         console.log("test");
         //TO-DO: Implement IdentityTask
+        identifyTask = new IdentityTask(layerURL);
+
+        //Parameters
+        identifyParams = new IdentifyParameters();
+        identifyParams.geometry = pointData;
+        identifyParams.tolerance = 3;
+        identifyParams.layerIds = [0];
+        identifyParams.returnGeometry = true;
+        //identifyParams.spatialReference = 
+
+        identifyTask.execute(identifyParams, function(results) {
+          console.log("here");
+          var features = [];
+          console.log(results.length);
+          console.log(results);
+          console.log(results[0]);
+        });
       }
+
+          
+
+
 
       document.getElementById("myBtn").addEventListener("click", getXY);
       
