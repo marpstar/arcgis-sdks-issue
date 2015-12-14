@@ -25,7 +25,8 @@
       top: 40px;
       right:40px;
       text-align: center;
-      background-color: rgba(255, 255, 255, 0.5); /* Color white with alpha 0.9*/
+      background-color: rgba(255, 255, 255, 0.7); /* Color white with alpha 0.9*/
+      padding: 20px 20px 20px 20px;
 
     }
     .style-1 input[type="text"] {
@@ -54,9 +55,9 @@
     require(["esri/map", 
              "esri/geometry/webMercatorUtils",
              "esri/urlUtils",
-             "esri/tasks/IdentifyTask",
-             "esri/tasks/IdentifyParameters",
-             "esri/tasks/IdentifyResult",
+             "esri/tasks/ImageServiceIdentifyTask",
+             "esri/tasks/ImageServiceIdentifyParameters",
+             "esri/tasks/ImageServiceIdentifyResult",
              "dojo/_base/array",
              "dojo/dom",
              "dojo/domReady!"], 
@@ -64,15 +65,15 @@
       Map,
       webMercatorUtils,
       urlUtils,
-      IdentityTask,
-      IdentifyParameters,
+      ImageServiceIdentifyTask,
+      ImageServiceIdentifyParameters,
+      ImageServiceIdentifyResult,
       arrayUtils,
       dom
 
     ) {
-      var identifyTask, identifyParams;
-
-      //Create a rule to go to Proxy when accessing elevation service
+      
+      //Create a rule to go to Proxy when accessing premium elevation service
       urlUtils.addProxyRule({
         urlPrefix: "http://elevation.arcgis.com",
         proxyUrl: "http://csc-dchambers7d/DotNet/proxy.ashx"
@@ -87,13 +88,14 @@
       map.on("click", getCoordinates);
 
       function getCoordinates(evt){
+        
         //Get map point in meters
         mp_meters = evt.mapPoint;
 
         //Get map point in decimal degrees
         var mp_geographic = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
         
-        //log
+        //log testing
         console.log("x: " + mp_meters.x.toFixed(13));
         console.log("y: " + mp_meters.y.toFixed(13));
 
@@ -105,22 +107,25 @@
       function queryZ(pointData){
         console.log("test");
         //TO-DO: Implement ImageServiceIdentifyTask instead of IdentifyTask
-        identifyTask = new IdentityTask(layerURL);
+        imageIdentifyTask = new ImageServiceIdentifyTask(layerURL);
 
         //Parameters
-        identifyParams = new IdentifyParameters();
-        identifyParams.geometry = pointData;
-        identifyParams.tolerance = 3;
-        identifyParams.layerIds = [0];
-        identifyParams.returnGeometry = true;
+        imageIdentifyParams = new ImageServiceIdentifyParameters();
+        imageIdentifyParams.geometry = pointData;
+        //identifyParams.tolerance = 3;
+        //identifyParams.layerIds = [0];
+        imageIdentifyParams.returnGeometry = true;
         //identifyParams.spatialReference = 
 
-        identifyTask.execute(identifyParams, function(results) {
+        imageIdentifyTask.execute(imageIdentifyParams, function(results) {
+          ImageServiceIdentifyResult = results;
+          //window.alert(ImageServiceIdentifyResult.value);
           console.log("here");
           var features = [];
           console.log(results.length);
           console.log(results);
           console.log(results[0]);
+          elevResult.innerHTML = ImageServiceIdentifyResult.value + " meters";
         });
       }
 
@@ -156,7 +161,11 @@
     X: <input type="text" name="x" id="x" value="Long"><br><br>
     Y: <input type="text" name="y" id="y" value="Lat"><br><br>
        <input type="submit" id="myBtn"text-align: "center" value="Get Elevation">
-       <p>Manually enter Lat/Long points into the text box above. <br>Or click the map and get the clicked point map location.</p>
+       <p>Manually enter Lat/Long points into the text box above. <br>Or click the map and get the clicked point map location.<br></p>
+
+
+       <p><b>Elevation</b>:</p>
+       <p id="elevResult"><b></b></p>
 
   </div>
 </div>
