@@ -112,11 +112,8 @@
         //Parameters
         imageIdentifyParams = new ImageServiceIdentifyParameters();
         imageIdentifyParams.geometry = pointData;
-        //identifyParams.tolerance = 3;
-        //identifyParams.layerIds = [0];
         imageIdentifyParams.returnGeometry = true;
-        //identifyParams.spatialReference = 
-
+        
         imageIdentifyTask.execute(imageIdentifyParams, function(results) {
           ImageServiceIdentifyResult = results;
           //window.alert(ImageServiceIdentifyResult.value);
