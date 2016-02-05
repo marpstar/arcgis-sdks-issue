@@ -1,17 +1,17 @@
 require([
     "esri/map", "application/bootstrapmap","esri/arcgis/Portal", "esri/arcgis/OAuthInfo", "esri/IdentityManager",
-    "dojo/dom-style", "dojo/dom-attr", "dojo/dom", "dojo/on", "dojo/_base/array","esri/layers/FeatureLayer",
+    "dojo/dom-style", "dojo/dom-attr", "dojo/dom", "dojo/on", "dojo/_base/array","esri/layers/FeatureLayer", "dojo/dom-style",
     "dojo/domReady!"
   ], function (Map, bootstrapmap, arcgisPortal, OAuthInfo, esriId,
-    domStyle, domAttr, dom, on, arrayUtils, FeatureLayer){
+    domStyle, domAttr, dom, on, arrayUtils, FeatureLayer, domStyle){
 
     //Global variable for resultsArray (object array of all AGOL items) and map.
     var resultsArray, map;
 
     //OAuthInfo to store appId
     var info = new OAuthInfo({
-      appId: "**",
-      popup: false
+      appId: "nVXcX14FD9j8fqiw",
+      popup: true
     });
     esriId.registerOAuthInfos([info]);
 
@@ -39,6 +39,13 @@ require([
           displayItems();
         });
   	});
+
+
+    //Listen for appidButton to be clicked and get value
+    on(dom.byId("appidButton"), "click", function(){
+      console.log("button has been clicked");
+
+    });
 
     //displayItems called from sign-in click event
     function displayItems(){
@@ -162,6 +169,9 @@ require([
     }
 
     function loadMap(){
+
+      //Set the serviceDropdown list to visible (hidden initially)
+      domStyle.set("serviceDropdown","visibility", "visible")
 
       // Get a reference to the ArcGIS Map class
       map = bootstrapmap.create("mapDiv",{
