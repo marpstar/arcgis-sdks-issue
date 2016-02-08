@@ -17,6 +17,10 @@
       #serviceDropdown{
         visibility: hidden;
       }
+
+      #ddbstrap{
+        visibility: hidden;
+      }
       
     </style>
 
@@ -52,20 +56,28 @@
     <!--End navbar-->
 
     <!-- HTML to define the layout of the map and page -->
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron" id="toHide" style="visible">
+      <div class="container">
+        <h1>Welcome!</h1>
+        <p>This is a sample for how to implement the OAuth2 pattern for accessing portal content.  You will need to generate an AppID in your developer account and then sign in to view your services. </p>
+        <form role="form">
+          <div class="form-group">
+            <div class="col-xs-2">
+              <label for="appid">App ID:</label>
+              <input type="text" class="form-control" id="appid" size="3">
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
     <div class="container" style="padding:15px;">
       <div class="row">
         <div class="col-xs-6">
           <h5>Title</h5>
-          <p>Welcome to a demo of how to use the OAuth2 pattern for accessing secured services in you
-          ArcGIS Online content. </p>
-          <form role="form">
-          <div class="form-group">
-            <label for="appid">App ID:</label>
-            <input type="appid" class="form-control" id="appid">
-          </div>
           
-          <button id="appidButton" type="button" class="btn btn-default">Submit</button>
-        </form>
+          
         </div>
       </div>
       <div class="row">
@@ -73,11 +85,30 @@
           <div id="mapDiv"></div>
         </div>
         <div class="col-xs-4">                
-          <select id="serviceDropdown">
-            <option>Choose a service</option>
-          </select>
+          <div class="dropdown" id="ddbstrap">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+            Add Data
+            <span class="caret"></span></button>
+            <ul class="dropdown-menu" id="serviceDropdown2">
+              <!--Dynamically appended-->
+            </ul>
         </div>
+    </div>
+
+          
+
+
+        </div>
+      
       </div>
+      <div class="dropdown" id="ddbstrap">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+          Add Data
+          <span class="caret"></span></button>
+          <ul class="dropdown-menu" id="serviceDropdown2">
+            <!--Dynamically appended-->
+          </ul>
+        </div>
     </div>
 
     <!-- Add JS to Load the responsive map -->

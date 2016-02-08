@@ -1,16 +1,16 @@
 require([
     "esri/map", "application/bootstrapmap","esri/arcgis/Portal", "esri/arcgis/OAuthInfo", "esri/IdentityManager",
-    "dojo/dom-style", "dojo/dom-attr", "dojo/dom", "dojo/on", "dojo/_base/array","esri/layers/FeatureLayer", "dojo/dom-style",
+    "dojo/dom-style", "dojo/dom-attr", "dojo/dom", "dojo/on", "dojo/_base/array","esri/layers/FeatureLayer", "dojo/dom-style", 
     "dojo/domReady!"
   ], function (Map, bootstrapmap, arcgisPortal, OAuthInfo, esriId,
     domStyle, domAttr, dom, on, arrayUtils, FeatureLayer, domStyle){
 
-    //Global variable for resultsArray (object array of all AGOL items) and map.
-    var resultsArray, map;
+    //Global variable for resultsArray (object array of all AGOL items), map and appID.
+    var resultsArray, map, appID, info;
 
     //OAuthInfo to store appId
     var info = new OAuthInfo({
-      appId: "nVXcX14FD9j8fqiw",
+      appId: appID,
       popup: true
     });
     esriId.registerOAuthInfos([info]);
@@ -32,6 +32,13 @@ require([
     //Listen for the sign-in button to be clicked
   	on(dom.byId("sign-in"), "click", function (){
       console.log("signing in...");
+      appID = document.getElementById("appid").value;
+
+      info.appId = appID; 
+
+      esriId.registerOAuthInfos([info]);
+
+      console.log("appid: " + appID);
       esriId.getCredential(info.portalUrl + "/sharing", {
           oAuthPopupConfirmation: false
         }
@@ -41,15 +48,15 @@ require([
   	});
 
 
-    //Listen for appidButton to be clicked and get value
-    on(dom.byId("appidButton"), "click", function(){
-      console.log("button has been clicked");
 
-    });
 
     //displayItems called from sign-in click event
     function displayItems(){
       console.log("in displayItems");
+
+      //Hide the jumbotron
+      //Set the serviceDropdown list to visible (hidden initially)
+      document.getElementById('toHide').style.display = "none";
 
       new arcgisPortal.Portal(info.portalUrl).signIn().then(
         function (portalUser){
@@ -88,62 +95,48 @@ require([
       resultsArray = (items.results);
       console.log(resultsArray);
 
-      //Test filling array
-      var select = document.getElementById("serviceDropdown");
-      //var options = ["1", "2", "3", "4", "5"];
-      for(var i = 0; i < resultsArray.length; i++) {
-          //console.log(resultsArray[i]);
-          if(resultsArray[i].displayName === "Feature Layer"){
-            console.log(resultsArray[i].name);
-            console.log(resultsArray[i].url);
 
-            //Add to array
-            var e1 = document.createElement("option");
-            e1.textContent = resultsArray[i].name;
-            e1.value = resultsArray[i].name;
-            select.appendChild(e1);
-          }
-          //var opt = resultsArray[i];
-          //console.log(opt);
-          // var el = document.createElement("option");
-          // el.textContent = opt;
-          // el.value = opt;
-          // select.appendChild(el);
+      var bootstrapSelect = document.getElementById("serviceDropdown2");
+      var bootstrapSelectJQuery = $("#serviceDropdown2");
+
+      for(var i = 0; i < resultsArray.length; i++){
+        if(resultsArray[i].displayName === "Feature Layer"){
+          
+
+          var htmlFragment = "<li><a href=\"#\">" + resultsArray[i].name + "</a></li>";
+          bootstrapSelectJQuery.append(htmlFragment);
+
+        }
       }
-
-
 
       loadMap();
     }
-    
-    //connect Dojo to DOM events
-    var e1 = document.getElementById("serviceDropdown");
-    e1.addEventListener("change", selectionMade, false);
 
-    function selectionMade(){
-        var serviceUrlForSelection;
-        console.log("hello from selection made");
-        console.log(e1.value);
 
-        console.log(resultsArray);
-        //Loop through the array and find that object to cooresponding name selected
-        for (var i = 0; i < resultsArray.length; i++) {
-          if(resultsArray[i].displayName === "Feature Layer"){
-            //console.log(resultsArray[i]);
-            if(resultsArray[i].name === e1.value){
-              console.log(resultsArray[i]);
-              serviceUrlForSelection = resultsArray[i].url;
-            }
-            //console.log(resultsArray[i].name);
+    //event handler for bootstrap dropdown to add services
+    $('#serviceDropdown2').on('click', "li", function(){
+      var serviceUrlForSelection;
+      console.log($(this).text());
+      var selection = $(this).text();
+
+      //Loop through the array of results to find object with cooresponding name selected
+      for(var i=0; i < resultsArray.length; i++){
+        if(resultsArray[i].displayName === "Feature Layer"){
+          if(resultsArray[i].name === selection){
+            console.log(resultsArray[i]);
+            serviceUrlForSelection = resultsArray[i].url;
+            console.log("Url is: " + serviceUrlForSelection);
+
           }
-        };
+        }
+      };
 
-        //Add selection to the map
-        map.addLayer(new FeatureLayer(serviceUrlForSelection + "/0"));
+      //Add selection to the map
+      map.addLayer(new FeatureLayer(serviceUrlForSelection + "/0"));
+      
 
 
-
-    }
+    });
 
     //Function to listen on click for re-register token
     var e2 = document.getElementById("reRegisterToken");
@@ -171,8 +164,8 @@ require([
     function loadMap(){
 
       //Set the serviceDropdown list to visible (hidden initially)
-      domStyle.set("serviceDropdown","visibility", "visible")
-
+      //domStyle.set("serviceDropdown","visibility", "visible")
+      domStyle.set("ddbstrap", "visibility", "visible");
       // Get a reference to the ArcGIS Map class
       map = bootstrapmap.create("mapDiv",{
         basemap: "national-geographic",
